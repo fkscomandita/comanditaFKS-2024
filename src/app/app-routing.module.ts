@@ -1,11 +1,18 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { SplashScreenComponent } from './componentes/splash-screen/splash-screen.component';
 
 const routes: Routes = [
   {
     path: '',
     loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
-  }
+  },
+ // {
+    //path: '', 
+    //loadComponent: () => import('./componentes/home/home.component').then(m=>m.HomeComponent),
+  //},
+  { path: 'login', loadComponent: () => import('./componentes/login/login.component').then(m=>m.LoginComponent)},
+  { path: 'custom-splash', component: SplashScreenComponent },
 ];
 @NgModule({
   imports: [

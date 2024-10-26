@@ -1,0 +1,49 @@
+
+.loader {
+    width: 50px;
+    aspect-ratio: 1;
+    display: grid;
+    border-radius: 50%;
+    background: conic-gradient(#4281a4 20%,#48a9a6 0 40%,#e4dfda 0 60%,#d4b483 0 80%,#c1666b 0);
+    animation: l22 2s infinite linear;
+  
+  }
+p{
+    color: black;
+}
+  .loader::before,
+  .loader::after {
+     content: "";
+     grid-area: 1/1;
+     margin: 15%;
+     border-radius: 50%;
+     background: inherit;
+     animation: inherit;
+  }
+  .loader::after {
+     margin: 25%;
+     animation-duration: 3s;
+  }
+  @keyframes l22 {
+    100% {transform: rotate(1turn)}
+  }
+
+  .loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* background-color:var(--color-transparente); Fondo borroso */
+    z-index: 9999; /* Z-index alto para estar por encima de todo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(255, 255, 255);
+    margin: 0;
+  }
+  
+  .loader-content {
+    text-align: center;
+
+  }

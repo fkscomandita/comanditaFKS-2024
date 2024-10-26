@@ -1,0 +1,110 @@
+
+@import url(https://fonts.googleapis.com/css?family=Roboto);
+
+/* zocial */
+[class*="entypo-"]:before {
+  font-family: 'entypo', sans-serif;
+}
+
+*,
+*:before,
+*:after {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; 
+}
+
+
+h2 {
+  color:var(--ion-color-dark);
+  margin-left:12px;
+}
+
+body {
+  background:var(--ion-color-light);
+  font-family: 'Roboto', sans-serif;
+  // margin-top: 120px;
+  
+}
+
+form {
+  position:relative;
+  margin: 50px auto;
+  width: 380px;
+  height: auto;
+  margin-bottom: 0;
+}
+
+input {
+  padding: 16px;
+  border-radius:7px;
+  border:0px;
+  background: rgba(255,255,255,.2);
+  display: block;
+  margin: 15px;
+  width: 300px;  
+  color:var(--ion-color-dark);
+  font-size:18px;
+  height: 54px;
+}
+
+input:focus {
+  outline-color: rgba(0,0,0,0);
+  background: var(--ion-color-dark);
+  color: var(--ion-color-primary);
+}
+
+button {
+  margin-top: 5px;
+  float:right;
+  height: 121px;
+  width: 50px;
+  border: 0px;
+  background: var(--ion-color-primary);
+  border-radius:7px;
+  padding: 10px;
+  color:var(--ion-color-dark);
+  font-size:22px;
+}
+
+.inputUserIcon {
+  position:absolute;
+  top:68px;
+  right: 80px;
+  color:var(--ion-color-dark);
+}
+
+.inputPassIcon {
+  position:absolute;
+  top:136px;
+  right: 80px;
+  color:var(--ion-color-dark);
+}
+
+input::-webkit-input-placeholder {
+  color: var(--ion-color-dark);
+}
+
+input:focus::-webkit-input-placeholder {
+  color: var(--ion-color-primary);
+}
+ion-tex{
+  margin: 10px;
+}
+ion-fab-button{
+border: solid 2px var(--ion-color-primary); /* Elimina el borde del botón */
+border-radius: 50%;
+padding: 0; /* Elimina el padding */
+background: none; /* Elimina el fondo del botón */
+margin-top: 10px;
+}
+#mensaje{
+  margin: 20px;
+}
+.closeSesion{
+  margin-bottom: 20px;
+}
+ion-card {
+  --background: var(--ion-color-primary-shade);
+  // --color: #9efff0;
+}

@@ -1,0 +1,45 @@
+
+<ion-card class="listasColumnas align-items-center justify-content-spaceEvenly">
+<form *ngIf="!auth.currentUser?.email" [formGroup]="formulario" (ngSubmit)="realizarAccion()">
+  <h2><span class="entypo-login"><i class="fa fa-sign-in"></i></span> Bienvenido</h2>
+  <button class="submit" [disabled]="isSubmitting"><span class="entypo-lock"><ion-icon name="lock-open-outline"></ion-icon></span></button>
+  <span class="entypo-user inputUserIcon">
+    <ion-icon slot="start" name="person-outline" class="input-icon"></ion-icon>
+   </span>
+  <input type="text" class="user"  placeholder="Ingrese correo" formControlName="email"/>
+  <span class="entypo-key inputPassIcon">
+    <ion-icon slot="start" name="lock-closed-outline" class="input-icon"></ion-icon>
+   </span>
+  <input type="password" class="pass" placeholder="Ingrese clave" formControlName="clave"/>
+  <ion-text color="danger" *ngIf="formulario.controls['email'].invalid && formulario.controls['email'].touched">
+    El correo es inválido.
+  </ion-text>
+  <ion-text color="danger" *ngIf="formulario.controls['clave'].invalid && formulario.controls['clave'].touched">
+    Clave inválida, ingrese una clave con más de 6 caracteres por favor.
+  </ion-text>
+</form>
+<ion-text id="mensaje" class=""></ion-text>
+
+
+  <!-- Mostrar el botón "Cerrar sesión" si hay una sesión iniciada -->
+  <div *ngIf="auth.currentUser?.email" class="closeSesion">
+    <ion-button (click)="cerrarSesion()" class="inputProlijo">Cerrar sesión</ion-button>
+  </div>
+</ion-card>
+
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab-button size="small">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+  <ion-fab-list side="top" style="margin-bottom: 50px; margin-left: -7px;">
+    <ion-fab-button (click)="completarCampos('admin@gmail.com', '123456')">
+      <img src="../../../assets/pics/admin.png" alt="Imagen 1">
+    </ion-fab-button>
+    <ion-fab-button (click)="completarCampos('empleado@gmail.com', '123456')">
+      <img src="../../../assets/pics/empleado.png" alt="Imagen 2">
+    </ion-fab-button>
+    <ion-fab-button (click)="completarCampos('cliente@gmail.com', '123456')">
+      <img src="../../../assets/pics/cliente.png" alt="Imagen 3">
+    </ion-fab-button>
+  </ion-fab-list>
+</ion-fab>
