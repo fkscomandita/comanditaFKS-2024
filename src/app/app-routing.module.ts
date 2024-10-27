@@ -12,6 +12,7 @@ const routes: Routes = [
     //loadComponent: () => import('./componentes/home/home.component').then(m=>m.HomeComponent),
   //},
   { path: 'login', loadComponent: () => import('./componentes/login/login.component').then(m=>m.LoginComponent)},
+  { path: 'alta', loadComponent: () => import('./componentes/alta/alta-usuarios/alta-usuarios.component').then(m=>m.AltaUsuariosComponent)},
   { path: 'custom-splash', component: SplashScreenComponent },
 ];
 @NgModule({

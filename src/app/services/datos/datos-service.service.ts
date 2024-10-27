@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collectionData, deleteDoc, doc, updateDoc } from '@angular/fire/firestore';
-import { addDoc, collection, getDocs, limit, orderBy, query } from 'firebase/firestore';
-import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
+import { Firestore, addDoc, collection, collectionData, deleteDoc, doc, query, updateDoc, getDocs, limit, orderBy } from '@angular/fire/firestore';
+import { getDownloadURL, getStorage, ref, uploadBytes } from '@angular/fire/storage';
+// import { addDoc, collection, getDocs, limit, orderBy, query } from 'firebase/firestore';
+// import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
+
 import { Observable, map } from 'rxjs';
 
 @Injectable({
@@ -15,10 +17,6 @@ export class DatosServiceService {
     try {
       // const id = await this.GetId(nombreDeRegistro);
       let col = collection(this.firestore, nombreDeRegistro);
-      // console.log(col);
-      // if (id != -1) {
-        // objetoAGuardar.id = id + 1;
-        // console.log(col);
         let doc= await addDoc(col, objetoAGuardar);
         this.modificarDatoAsync(doc.id,nombreDeRegistro,{id:doc.id});
         if(typeof doc.id == "string"){
@@ -26,11 +24,6 @@ export class DatosServiceService {
         } else{
           return "Error al subir el dato";
         }
-
-        // console.log('Documento agregado con éxito');
-      // } else {
-        // console.error('Error: ID no válido obtenido');
-      // }
     } catch (error) {
       console.error('Error guardando los datos: ', error);
     }

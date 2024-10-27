@@ -1,0 +1,68 @@
+
+<!-- nombre, apellido, DNI y foto. -->
+ <div class="conteiner">
+   <form [formGroup]="formulario" (ngSubmit)="guardarDatos()">
+    <h1>Alta {{tipo}}</h1>
+    <h2>cuenta acutual {{this.auth.currentUser?.email}}</h2>
+    <div class="primerBloque">
+      <div class="primerMitad" *ngIf="tipo!='Anónimo'">
+        <ion-input label="Nombre" label-placement="floating" fill="outline" placeholder="Ingrese nombre" formControlName="nombre"></ion-input>
+        <ion-text color="danger" *ngIf="formulario.controls['nombre'].invalid && formulario.controls['nombre'].touched">
+          Ingrese nombre, sin símbolos ni números.
+        </ion-text>
+        <ion-input label="Apellido" label-placement="floating" fill="outline" placeholder="Ingrese apellido" formControlName="apellido"></ion-input>
+        <ion-text color="danger" *ngIf="formulario.controls['apellido'].invalid && formulario.controls['apellido'].touched">
+          Ingrese apellido, sin símbolos ni números.
+        </ion-text>
+        <ion-input label="Dni" label-placement="floating" fill="outline" placeholder="Ingrese dni" formControlName="dni"></ion-input>
+        <ion-text color="danger" *ngIf="formulario.controls['dni'].invalid && formulario.controls['dni'].touched">
+          Debe ingresar un número mayor a 8 dígitos.
+        </ion-text>
+        <ion-input label="Correo" label-placement="floating" fill="outline" placeholder="Ingrese correo" formControlName="correo"></ion-input>
+        <ion-text color="danger" *ngIf="formulario.controls['correo'].invalid && formulario.controls['correo'].touched">
+          El correo es inválido.
+        </ion-text>
+      </div>
+      <div class="primerMitad" *ngIf="tipo=='Anónimo'">
+        <ion-input label="Nombre" label-placement="floating" fill="outline" placeholder="Ingrese nombre" formControlName="nombre"></ion-input>
+        <ion-text color="danger" *ngIf="formulario.controls['nombre'].invalid && formulario.controls['nombre'].touched">
+          Ingrese nombre, sin símbolos ni números.
+        </ion-text>
+      </div>
+      <div class="fotoPerfil">
+        <img *ngIf="imagenSubida" [src]="imagenSubida.foto" alt="foto perdida">
+        <ion-icon *ngIf="!imagenSubida" name="person-circle-outline" class="sinFoto"></ion-icon>
+        <ion-fab-button (click)="sacarFoto()" class="botonCamara">
+          <ion-icon name="camera"></ion-icon>
+        </ion-fab-button>
+      </div>
+    </div>
+    
+    <div class="claves" *ngIf="tipo!='Anónimo'">
+      <div class="textoError">
+        <ion-input label="Clave" label-placement="floating" fill="outline" placeholder="Ingrese clave" formControlName="clave" type="password"></ion-input>
+        <ion-text color="danger" *ngIf="formulario.controls['clave'].invalid && formulario.controls['clave'].touched">
+          La clave debe ser mayor a 6 digítos.
+        </ion-text>
+      </div>
+      <div class="textoError">
+        <ion-input label="Repita clave" label-placement="floating" fill="outline" placeholder="Ingrese clave" formControlName="repiteClave" type="password"></ion-input>
+        <ion-text color="danger" *ngIf="formulario.controls['repiteClave'].invalid && formulario.controls['repiteClave'].touched">
+          Las claves no coinciden.
+        </ion-text>
+      </div>
+    </div>
+
+      <ion-item *ngIf="tipo!='Anónimo' && tipo!='Cliente' ">
+        <ion-select label="Perfil" placeholder="Elija el perfil del empleado">
+          <ion-select-option *ngFor="let perfil of perfiles" [value]="perfil">
+            {{ perfil }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+
+
+     <ion-button (click)="guardarDatos()" [disabled]="isSubmitting">Crear {{tipo}}</ion-button>
+   </form>
+ </div>
