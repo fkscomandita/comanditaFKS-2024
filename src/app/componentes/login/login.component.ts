@@ -1,144 +1,110 @@
-
-import { Component, OnChanges, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterOutlet } from '@angular/router';
-import { addDoc, Firestore } from '@angular/fire/firestore';
-import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from '@angular/fire/auth';
-import { collection } from 'firebase/firestore';
-import { ModulosComunesModule } from 'src/app/modulos/modulos-comunes/modulos-comunes.module';
-
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import {
+  IonContent,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
+  IonInput,
+  IonInputPasswordToggle,
+  IonToast,
+} from '@ionic/angular/standalone';
+import { FirebaseError } from '@angular/fire/app';
+import { authErrors } from 'src/app/services/auth.errors';
+import { AuthService } from 'src/app/services/auth.service';
+import { Router } from '@angular/router';
+import { NgxSpinnerService, NgxSpinnerModule } from 'ngx-spinner';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
-  imports: [ReactiveFormsModule, ModulosComunesModule, RouterOutlet], // Asegúrate de que todos los módulos necesarios están aquí
   standalone: true,
+  imports: [
+    IonContent,
+    IonHeader,
+    IonTitle,
+    IonToast,
+    IonToolbar,
+    IonInput,
+    IonInputPasswordToggle,
+    CommonModule,
+    ReactiveFormsModule,
+    NgxSpinnerModule,
+  ],
 })
 export class LoginComponent {
-  formulario: FormGroup;
-  isSubmitting: boolean = false;
-  accion:string = "Iniciar sesión";
-  logeado:any;
+  form: FormGroup = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required]],
+  });
+  errorMessage: string = '';
 
-  constructor(private fb: FormBuilder, private router: Router, private firestore: Firestore, public auth: Auth) {
-    this.formulario = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      clave: ['', [Validators.required, Validators.minLength(6)]],
-      // terminos: [false, Validators.requiredTrue]
-    });
-    this.logeado=auth.authStateReady();
-  }
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private authService: AuthService,
+    public spinner: NgxSpinnerService
+  ) {}
 
-  completarCampos(email: string, clave: string) {
-    this.formulario.patchValue({
-      email: email,
-      clave: clave
-    });
-  }
+  handleSubmit() {
+    this.spinner.show();
 
-  isFormComplete(): boolean {
-    return this.formulario.valid;
-  }
+    if (this.form.invalid) {
+      this.errorMessage = '';
 
-  registroDatosUsuarios() {
-    let col = collection(this.firestore, 'usuarios');
-    addDoc(col, { "user": this.email, "rol": "normal" });
-  }
-
-  realizarAccion() {
-    if (this.isFormComplete()) {
-      this.formulario.markAllAsTouched();
-      this.isSubmitting = true;
-      let promesa: Promise<any>; // Cambiado de Promise<T> a Promise<any> para ser genérico
-  
-      if (this.accion === "Iniciar sesión") {
-        promesa = signInWithEmailAndPassword(this.auth, this.email, this.clave);
-      } else {
-        promesa = createUserWithEmailAndPassword(this.auth, this.email, this.clave);
+      if (this.form.controls['email'].invalid) {
+        this.errorMessage = 'El correo electrónico es inválido.';
       }
-  
-      promesa.then((res) => {
-        if (res.user.email !== null) {
-          const parrafo = document.getElementById('mensaje') as HTMLIonTextElement;
-  
-          if (parrafo) {
-            parrafo.setAttribute('color', 'success'); // Corregido de 'succes' a 'success'
-  
-            if (this.accion === "Iniciar sesión") {
-              parrafo.textContent = "Bienvenido " + res.user.email;
-              parrafo.textContent = `Usuario iniciado con éxito! Bienvenido ${this.email}`;
+      if (this.form.controls['password'].invalid) {
+        this.errorMessage += this.errorMessage ? ' ' : '';
+        this.errorMessage += 'La contraseña es requerida.';
+      }
+      if (!this.errorMessage) {
+        this.errorMessage =
+          'Por favor, complete todos los campos correctamente.';
+      }
 
-            } else {
-              parrafo.textContent = `Usuario registrado con éxito! Bienvenido ${this.email}`;
-            }
-  
-            setTimeout(() => {
-              // Limpiar el formulario y el mensaje
-              this.limpiarForm();
-             this.router.navigate(['']); // Navega a la ruta deseada
-            }, 2000); // Aumenta el tiempo si es necesario
+      this.spinner.hide();
+      return;
+    }
+
+    const { email, password } = this.form.value;
+
+    this.authService.login(email, password).subscribe({
+      next: () => {
+        this.spinner.hide();
+        this.errorMessage = '';
+        this.form.controls['email'].setValue('');
+        this.form.controls['password'].setValue('');
+        this.router.navigateByUrl('home');
+      },
+      error: (err: FirebaseError) => {
+        let errorMessage = 'Se produjo un error desconocido.';
+        for (const error of authErrors) {
+          if (error.code === err.code) {
+            errorMessage = error.message;
+            break;
           }
-  
-          //this.registroDatosUsuarios(); // Asegúrate de que este método esté correctamente definido
         }
-      }).catch((e) => {
-        this.motivoMail(e);
-      }).finally(() => {
-        this.isSubmitting = false;
-      });
-    }
-  }
-  
-  limpiarForm(){
-    const parrafo = document.getElementById('mensaje') as HTMLIonTextElement;
-    this.formulario.reset(); // Limpia todos los campos del formulario
-    parrafo.textContent = '';
+        this.errorMessage = errorMessage;
+        this.spinner.hide();
+      },
+    });
   }
 
-  motivoMail(e: any) {
-    // const parrafo = document.getElementById('mensaje');
-    const parrafo = document.getElementById('mensaje') as HTMLIonTextElement;
-    if (parrafo) {
-      // parrafo.color="danger";
-      parrafo.setAttribute('color', 'danger');
-      // parrafo.classList.add('fontRed');
-      
-      switch (e.code) {
-        case "auth/email-already-in-use":
-          parrafo.textContent = 'Usuario ya registrado';
-          break;
-        case "auth/too-many-requests":
-          parrafo.textContent = 'Demasiados intentos. Reestablecer contraseña.';
-          break;
-        case "auth/invalid-credential":
-          parrafo.textContent = 'Contraseña o correo incorrectos!';
-          break;
-        case "auth/weak-password":
-          parrafo.textContent = 'Contraseña muy corta, debe tener al menos 6 caracteres';
-          break;
-        case "auth/invalid-email":
-          parrafo.textContent = 'Correo inválido. Debe ser una cuenta de correo electrónico';
-          break;
-        case "auth/missing-password":
-          parrafo.textContent = 'Falta ingresar la clave';
-          break;
-        default:
-          parrafo.textContent = 'Hubo un error, no se pudo proceder.';
-      }
-    }
+  handleQuickAccess(email: string, password: string) {
+    this.errorMessage = '';
+    this.form.controls['email'].setValue(email);
+    this.form.controls['password'].setValue(password);
   }
 
-
-  cerrarSesion(){
-    this.limpiarForm();
-    this.auth.signOut();
-}
-
-  get email() {
-    return this.formulario.get('email')?.value;
-  }
-
-  get clave() {
-    return this.formulario.get('clave')?.value;
+  onInputChange() {
+    this.errorMessage = '';
   }
 }

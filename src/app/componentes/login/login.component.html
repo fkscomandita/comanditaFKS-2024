@@ -1,45 +1,83 @@
+<ngx-spinner
+  bdColor="rgba(0, 0, 0, 0.8)"
+  template="<img src=''./../../../assets/logo.png' alt='logo' />"
+>
+  <p style="color: #dee2e6; font-size: 40px">Cargando...</p>
+</ngx-spinner>
 
-<ion-card class="listasColumnas align-items-center justify-content-spaceEvenly">
-<form *ngIf="!auth.currentUser?.email" [formGroup]="formulario" (ngSubmit)="realizarAccion()">
-  <h2><span class="entypo-login"><i class="fa fa-sign-in"></i></span> Bienvenido</h2>
-  <button class="submit" [disabled]="isSubmitting"><span class="entypo-lock"><ion-icon name="lock-open-outline"></ion-icon></span></button>
-  <span class="entypo-user inputUserIcon">
-    <ion-icon slot="start" name="person-outline" class="input-icon"></ion-icon>
-   </span>
-  <input type="text" class="user"  placeholder="Ingrese correo" formControlName="email"/>
-  <span class="entypo-key inputPassIcon">
-    <ion-icon slot="start" name="lock-closed-outline" class="input-icon"></ion-icon>
-   </span>
-  <input type="password" class="pass" placeholder="Ingrese clave" formControlName="clave"/>
-  <ion-text color="danger" *ngIf="formulario.controls['email'].invalid && formulario.controls['email'].touched">
-    El correo es inválido.
-  </ion-text>
-  <ion-text color="danger" *ngIf="formulario.controls['clave'].invalid && formulario.controls['clave'].touched">
-    Clave inválida, ingrese una clave con más de 6 caracteres por favor.
-  </ion-text>
-</form>
-<ion-text id="mensaje" class=""></ion-text>
+<ion-content>
+  <div class="container">
+    <ion-title>Inicio de sesión</ion-title>
 
+    <h2 class="text-access">Acceso rápido</h2>
+    <div class="buttons-container">
+      <button
+        class="btn"
+        (click)="handleQuickAccess('admin@admin.com', '111111')"
+      >
+        Admin
+      </button>
+      <button
+        class="btn"
+        (click)="handleQuickAccess('invitado@invitado.com', '222222')"
+      >
+        Invitado
+      </button>
+      <button
+        class="btn"
+        (click)="handleQuickAccess('usuario@usuario.com', '333333')"
+      >
+        Usuario
+      </button>
+      <button
+        class="btn"
+        (click)="handleQuickAccess('anonimo@anonimo.com', '444444')"
+      >
+        Anónimo
+      </button>
+      <button
+        class="btn"
+        (click)="handleQuickAccess('tester@tester.com', '555555')"
+      >
+        Pruebas
+      </button>
+    </div>
 
-  <!-- Mostrar el botón "Cerrar sesión" si hay una sesión iniciada -->
-  <div *ngIf="auth.currentUser?.email" class="closeSesion">
-    <ion-button (click)="cerrarSesion()" class="inputProlijo">Cerrar sesión</ion-button>
+    <form [formGroup]="form" (ngSubmit)="handleSubmit()">
+      <ion-input
+        color="dark"
+        id="email"
+        formControlName="email"
+        type="email"
+        label="Email"
+        placeholder="hola@gmail.com"
+        (input)="onInputChange()"
+      />
+      <br />
+      <ion-input
+        color="dark"
+        id="password"
+        formControlName="password"
+        type="password"
+        label="Password"
+        placeholder="unacontraseña"
+        (input)="onInputChange()"
+      >
+        <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+      </ion-input>
+
+      <button id="button" type="submit">Iniciar sesión</button>
+    </form>
   </div>
-</ion-card>
-
-<ion-fab vertical="bottom" horizontal="end" slot="fixed">
-  <ion-fab-button size="small">
-    <ion-icon name="add"></ion-icon>
-  </ion-fab-button>
-  <ion-fab-list side="top" style="margin-bottom: 50px; margin-left: -7px;">
-    <ion-fab-button (click)="completarCampos('admin@gmail.com', '123456')">
-      <img src="../../../assets/pics/admin.png" alt="Imagen 1">
-    </ion-fab-button>
-    <ion-fab-button (click)="completarCampos('empleado@gmail.com', '123456')">
-      <img src="../../../assets/pics/empleado.png" alt="Imagen 2">
-    </ion-fab-button>
-    <ion-fab-button (click)="completarCampos('cliente@gmail.com', '123456')">
-      <img src="../../../assets/pics/cliente.png" alt="Imagen 3">
-    </ion-fab-button>
-  </ion-fab-list>
-</ion-fab>
+  <div *ngIf="errorMessage.length > 0">
+    <ion-toast
+      class="text-danger"
+      color="danger"
+      [duration]="5000"
+      (didDismiss)="errorMessage = ''"
+      isOpen="errorMessage.length > 0"
+      [message]="errorMessage"
+      position="bottom"
+    ></ion-toast>
+  </div>
+</ion-content>
