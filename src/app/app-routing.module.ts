@@ -3,10 +3,10 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { SplashScreenComponent } from './componentes/splash-screen/splash-screen.component';
 
 const routes: Routes = [
-  {
-    path: '',
-    loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
-  },
+  // {
+  //   path: '',
+  //   loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
+  // },
  // {
     //path: '', 
     //loadComponent: () => import('./componentes/home/home.component').then(m=>m.HomeComponent),
