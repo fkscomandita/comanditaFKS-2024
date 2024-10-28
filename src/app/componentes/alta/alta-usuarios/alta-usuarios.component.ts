@@ -20,8 +20,8 @@ export class AltaUsuariosComponent  implements OnInit {
   isSubmitting: boolean = false;
   loader = false;
   imagenSubida:any=false;
-  perfiles: string[] = [];
-  @Input() tipo="Empleados";
+  tipos: string[] = [];
+  @Input() tipoTraido="Anónimo";
 
   constructor(private formBuilder: FormBuilder,private fotosService: FotoService,private cdr: ChangeDetectorRef, public auth: Auth,
     private newAuth: Auth, private datosService:DatosServiceService) { 
@@ -29,39 +29,67 @@ export class AltaUsuariosComponent  implements OnInit {
       nombre: ['', [Validators.pattern('^[a-zA-Z ]+$'), Validators.required]],
       apellido: ['', [Validators.pattern('^[a-zA-Z ]+$'), Validators.required]],
       dni: ['', [isNumberValidator(),Validators.required, Validators.min(10000000)]],
+      cuil: ['', [isNumberValidator(),Validators.required, Validators.min(10000000000)]],
       correo: ['', [Validators.required, Validators.email]],
       clave: ['', [Validators.required, Validators.minLength(6)]],
       repiteClave: ['', [Validators.required]],
       foto: ['', [Validators.required]],
+      tipoUsuario: ['', Validators.required],
     }, {
       validators: confirmarCalveValidator()
     });
   }
 
   ngOnInit() {
-    if(this.tipo=="Dueño" || this.tipo=="Supervisor" ){
-      this.perfiles= ['Dueño', 'Supervisor']
+    if(this.tipoTraido=="Dueño" || this.tipoTraido=="Supervisor" ){
+      this.tipos= ['Dueño', 'Supervisor'];
     } else{
-        this.perfiles= ['Maître', 'Mozo','Cocinero', 'Bartender']
-    }
+        this.tipos= ['Maître', 'Mozo','Cocinero', 'Bartender'];
+        if(this.tipoTraido!="Empleado"){
+          this.tipoUsuario?.setValue(this.tipoTraido);
+          this.eliminarValidacion("cuil");
+          this.eliminarValidacion("tipoUsuario");
+          if(this.tipoTraido=="Anónimo"){
+            this.eliminarValidacion("apellido");
+            this.eliminarValidacion("dni");
+            this.eliminarValidacion("correo");
+            this.eliminarValidacion("clave");
+            this.eliminarValidacion("repiteClave");
+          }
+      }
+        }
+  }
+
+  eliminarValidacion(validacion:string){
+    this.formulario.get(validacion)?.clearValidators();
+    this.formulario.get(validacion)?.updateValueAndValidity();
   }
 
   async guardarDatos(){
     if (this.formulario.valid) {
-      
       this.formulario.markAllAsTouched();
       this.formulario.markAsPristine();
       this.isSubmitting = true;
       try {
-        let nuevoUsuario = await this.crearOtroUsuario();
-        if (nuevoUsuario.user) {
-        let urlFotoSubida = await this.datosService.subirImagenAsync("Fotos de perfil", `${this.dni?.value}-FotoDePerfil`, this.imagenSubida.fotoCamara);
-        await this.datosService.guardarDatos("usuarios", this.ajustarDatos(urlFotoSubida));
-         this.datosService.guardarDatos("usuarios", {prueba:"prueba"});
-        this.formulario.reset();
-        this.imagenSubida=false;
-        console.log("Subida exitosa");
-        }
+        let nuevoUsuario:any;
+        let urlFotoSubida;
+        if(this.tipoTraido!="Anónimo"){
+          nuevoUsuario = await this.crearOtroUsuario();
+          urlFotoSubida = await this.datosService.subirImagenAsync("Fotos de perfil", `${this.dni?.value}-FotoDePerfil`, this.imagenSubida.fotoCamara);
+          await this.datosService.guardarDatos("usuarios", this.ajustarDatos(urlFotoSubida));
+
+        }else{
+          urlFotoSubida = await this.datosService.subirImagenAsync("Fotos de perfil anonimas", `${this.nombre?.value}-FotoDePerfil`, this.imagenSubida.fotoCamara);
+          await this.datosService.guardarDatos("usuariosAnonimos", this.ajustarDatos(urlFotoSubida));
+
+        }    
+        // if (nuevoUsuario.user || this.tipoTraido=="Anónimo") 
+        // {
+          // urlFotoSubida = await this.datosService.subirImagenAsync("Fotos de perfil", `${this.dni?.value}-FotoDePerfil`, this.imagenSubida.fotoCamara);
+          this.formulario.reset();
+          this.imagenSubida=false;
+          console.log("Subida exitosa");
+        // }
       }  catch (error) {
         this.motivoMail(error);       
       } finally {
@@ -73,15 +101,29 @@ export class AltaUsuariosComponent  implements OnInit {
 
 
   }
-  ajustarDatos(url:String){
+  ajustarDatos(url: string) {
     const formData = { ...this.formulario.value };
     const keysToRemove = ["repiteClave"];
-    keysToRemove.forEach(key => delete formData[key]);
-    formData.foto=url;
-    formData.tipoUsuario=this.tipo;
-    formData.aprobado=false;
+    
+    if (this.tipoTraido === "Cliente") {
+      keysToRemove.push("cuil");
+    }
+  
+    if (this.tipoTraido === "Anónimo") {
+      Object.keys(formData).forEach(key => {
+        if (key !== "nombre" && key !== "foto") {
+          delete formData[key];
+        }
+      });
+    } else {
+      keysToRemove.forEach(key => delete formData[key]);
+      formData.aprobado = false;
+    }
+  
+    formData.foto = url;
     return formData;
   }
+  
 
 
 
@@ -149,7 +191,9 @@ export class AltaUsuariosComponent  implements OnInit {
     // this.alertas.autoCloseAlert(texto, 3000);
   }
 
-
+  escanearDatos(){
+    
+  }
 
   get nombre() {
     return this.formulario.get('nombre');
@@ -178,6 +222,12 @@ export class AltaUsuariosComponent  implements OnInit {
 
   get foto() {
     return this.formulario.get('foto');
+  }
+  get cuit() {
+    return this.formulario.get('cuit');
+  }
+  get tipoUsuario() {
+    return this.formulario.get('tipoUsuario');
   }
 
 }
