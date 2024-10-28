@@ -2,10 +2,10 @@
 <!-- nombre, apellido, DNI y foto. -->
  <div class="conteiner">
    <form [formGroup]="formulario" (ngSubmit)="guardarDatos()">
-    <h1>Alta {{tipo}}</h1>
-    <h2>cuenta acutual {{this.auth.currentUser?.email}}</h2>
+    <h1>Alta {{tipoTraido}}</h1>
+    <!-- <h2>cuenta acutual {{this.auth.currentUser?.email}}</h2> -->
     <div class="primerBloque">
-      <div class="primerMitad" *ngIf="tipo!='Anónimo'">
+      <div class="primerMitad" *ngIf="tipoTraido!='Anónimo'">
         <ion-input label="Nombre" label-placement="floating" fill="outline" placeholder="Ingrese nombre" formControlName="nombre"></ion-input>
         <ion-text color="danger" *ngIf="formulario.controls['nombre'].invalid && formulario.controls['nombre'].touched">
           Ingrese nombre, sin símbolos ni números.
@@ -23,7 +23,7 @@
           El correo es inválido.
         </ion-text>
       </div>
-      <div class="primerMitad" *ngIf="tipo=='Anónimo'">
+      <div class="primerMitad" *ngIf="tipoTraido=='Anónimo'">
         <ion-input label="Nombre" label-placement="floating" fill="outline" placeholder="Ingrese nombre" formControlName="nombre"></ion-input>
         <ion-text color="danger" *ngIf="formulario.controls['nombre'].invalid && formulario.controls['nombre'].touched">
           Ingrese nombre, sin símbolos ni números.
@@ -38,7 +38,7 @@
       </div>
     </div>
     
-    <div class="claves" *ngIf="tipo!='Anónimo'">
+    <div class="filas" *ngIf="tipoTraido!='Anónimo'">
       <div class="textoError">
         <ion-input label="Clave" label-placement="floating" fill="outline" placeholder="Ingrese clave" formControlName="clave" type="password"></ion-input>
         <ion-text color="danger" *ngIf="formulario.controls['clave'].invalid && formulario.controls['clave'].touched">
@@ -52,17 +52,36 @@
         </ion-text>
       </div>
     </div>
-
-      <ion-item *ngIf="tipo!='Anónimo' && tipo!='Cliente' ">
-        <ion-select label="Perfil" placeholder="Elija el perfil del empleado">
-          <ion-select-option *ngFor="let perfil of perfiles" [value]="perfil">
-            {{ perfil }}
-          </ion-select-option>
-        </ion-select>
-      </ion-item>
-
-
-
-     <ion-button (click)="guardarDatos()" [disabled]="isSubmitting">Crear {{tipo}}</ion-button>
+    <div class="filas" *ngIf="tipoTraido != 'Anónimo' && tipoTraido != 'Cliente'">
+      <div class="textoError">
+        <ion-input label="Cuil" label-placement="floating" fill="outline" placeholder="Ingrese cuil" formControlName="cuil"></ion-input>
+        <ion-text color="danger" *ngIf="formulario.controls['cuil'].invalid && formulario.controls['cuil'].touched">
+          Debe ingresar un número mayor a 11 dígitos.
+        </ion-text>
+      </div>
+      
+      <div class="textoError">
+        <!-- <ion-item > -->
+          <ion-select 
+            formControlName="tipoUsuario" 
+            label="Tipo de usuario" 
+            placeholder="Elija el tipo de usuario"
+            label-placement="floating" fill="outline"
+            >
+            <ion-select-option *ngFor="let tipo of tipos" [value]="tipo">
+              {{ tipo }}
+            </ion-select-option>
+          </ion-select>
+        <!-- </ion-item>        -->
+        <ion-text color="danger" *ngIf="formulario.controls['tipoUsuario'].invalid && formulario.controls['tipoUsuario'].touched">
+          Debe seleccionar un tipo de usuario.
+        </ion-text>
+      </div>
+      
+    </div>
+    <div class="filas">
+      <ion-button  *ngIf="tipoTraido != 'Anónimo'" (click)="escanearDatos()"><ion-icon name="qr-code-outline"></ion-icon>DNI</ion-button>
+     <ion-button (click)="guardarDatos()" [disabled]="isSubmitting">Crear {{tipoTraido}}</ion-button>
+    </div>
    </form>
  </div>
